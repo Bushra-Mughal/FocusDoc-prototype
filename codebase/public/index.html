@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FocusDoc – Doctor Test Prototype</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:wght@500;600&display=swap">
+<style>
+:root{
+  --bg:#f6f8f9;--surface:#ffffff;--ink:#14282e;--muted:#52666d;--line:#d5dee1;
+  --brand:#0d5c63;--brand-ink:#ffffff;--soft:#e4f1f2;--warn-bg:#fff4d6;--warn-ink:#5c4200;--warn-line:#e8c766;
+  --bad-bg:#fde8e6;--bad-ink:#7a1d14;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f1b1f;--surface:#16262b;--ink:#e6eff1;--muted:#9bb0b6;--line:#2b4046;
+  --brand:#5fc3cb;--brand-ink:#08262a;--soft:#183a3f;--warn-bg:#3a3014;--warn-ink:#f3dc9a;--warn-line:#7a6420;
+  --bad-bg:#3d1b18;--bad-ink:#f6b8b1;}}
+:root[data-theme="dark"]{
+  --bg:#0f1b1f;--surface:#16262b;--ink:#e6eff1;--muted:#9bb0b6;--line:#2b4046;
+  --brand:#5fc3cb;--brand-ink:#08262a;--soft:#183a3f;--warn-bg:#3a3014;--warn-ink:#f3dc9a;--warn-line:#7a6420;
+  --bad-bg:#3d1b18;--bad-ink:#f6b8b1;}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
+h1,h2,h3{font-family:"Source Serif 4",Georgia,serif;font-weight:600;line-height:1.25;margin:0}
+.wrap{max-width:860px;margin:0 auto;padding:20px 16px 64px}
+.banner{background:var(--warn-bg);color:var(--warn-ink);border:1px solid var(--warn-line);border-radius:8px;padding:12px 14px;font-size:14px}
+.banner b{font-weight:600}
+header{margin:22px 0 18px}
+header h1{font-size:30px}
+header p{color:var(--muted);margin:6px 0 0;max-width:62ch}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px;margin-bottom:18px}
+.row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media(max-width:640px){.row{grid-template-columns:1fr}}
+label.f{display:block;font-size:14px;font-weight:500;margin:12px 0 4px}
+select,textarea,input[type=text]{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+textarea{min-height:92px;resize:vertical}
+select:focus,textarea:focus,input:focus,button:focus-visible,.seg input:focus-visible+span{outline:3px solid var(--brand);outline-offset:1px}
+.hint{font-size:13px;color:var(--muted);margin-top:3px}
+.chk{display:flex;gap:8px;align-items:center;margin-top:14px;font-size:14px}
+.btn{font:inherit;font-weight:600;border:0;border-radius:8px;padding:12px 18px;background:var(--brand);color:var(--brand-ink);cursor:pointer;min-height:46px}
+.btn.ghost{background:transparent;color:var(--brand);border:1px solid var(--brand);font-weight:500}
+.btn[disabled]{opacity:.55;cursor:wait}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;align-items:center}
+.cases{font-size:13px;color:var(--muted)}
+.cases button{font:inherit;font-size:13px;background:none;border:0;color:var(--brand);text-decoration:underline;cursor:pointer;padding:4px}
+#status{margin:14px 0;color:var(--muted)}
+#status.err{color:var(--bad-ink);background:var(--bad-bg);padding:10px 12px;border-radius:8px}
+.res h2{font-size:22px;margin-bottom:4px}
+.res section{border-top:1px solid var(--line);padding-top:14px;margin-top:16px}
+.res h3{font-size:17px;margin-bottom:8px}
+.res ul{margin:0;padding-left:20px}
+.res li{margin:4px 0}
+.dx{border:1px solid var(--line);border-left:4px solid var(--brand);border-radius:8px;padding:10px 12px;margin:10px 0}
+.dx b{font-family:"Source Serif 4",Georgia,serif;font-size:17px}
+.dx .cols{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:6px;font-size:14px}
+@media(max-width:640px){.dx .cols{grid-template-columns:1fr}}
+.dx small{color:var(--muted);display:block;font-weight:600}
+.flag{background:var(--bad-bg);color:var(--bad-ink);border-radius:8px;padding:10px 14px}
+.flag ul{padding-left:18px;margin:0}
+.unk{background:var(--soft);border-radius:8px;padding:10px 14px}
+.ctx{color:var(--muted);font-size:14px}
+.tag{display:inline-block;font-size:12px;background:var(--soft);color:var(--ink);border-radius:20px;padding:2px 9px;margin:2px 4px 2px 0}
+.seg{display:flex;flex-wrap:wrap;gap:8px}
+.seg label{cursor:pointer}
+.seg input{position:absolute;opacity:0}
+.seg span{display:inline-block;border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-size:14px;background:var(--bg)}
+.seg input:checked+span{background:var(--brand);color:var(--brand-ink);border-color:var(--brand)}
+.fb h2{font-size:20px}
+.fb .q{margin-top:14px;font-weight:500;font-size:14px}
+.ok{color:var(--brand);font-weight:600;margin-top:12px}
+.errbox{background:var(--bad-bg);color:var(--bad-ink);border-radius:8px;padding:10px 14px;margin-top:12px;font-weight:500}
+.seg.miss{outline:2px solid var(--bad-ink);outline-offset:5px;border-radius:8px}
+details.panel summary{cursor:pointer;font-family:"Source Serif 4",Georgia,serif;font-weight:600;font-size:18px}
+details.panel[open] summary{margin-bottom:6px}
+footer{color:var(--muted);font-size:13px;margin-top:28px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="banner" role="note"><b>Test prototype, not a clinical tool.</b> Answers are AI-generated, have not been clinically validated, and are not checked against a source library. Use <b>synthetic or fully anonymous cases only</b>: no names, phone numbers, MRNs or other identifiers. Cases are processed by Google’s free Gemini service, which may use inputs to improve its products. Your judgment always decides.</div>
+
+  <header>
+    <h1>FocusDoc</h1>
+    <p>Choose your specialty, describe a case or ask a question, and review the symptoms, diagnostic considerations and treatment information that come back. Then tell us how good they were.</p>
+  </header>
+
+  <div class="panel">
+    <label class="f" for="code" style="margin-top:0">Access code</label>
+    <input type="text" id="code" autocomplete="off" placeholder="Given to you by the team" style="max-width:280px">
+    <div class="row">
+      <div><label class="f" for="spec">Your specialty</label>
+        <select id="spec"></select></div>
+      <div><label class="f" for="age">Patient age group</label>
+        <select id="age"><option>Not specified</option><option>Neonate</option><option>Infant</option><option>Child</option><option>Adolescent</option><option>Adult</option><option>Older adult</option></select></div>
+      <div><label class="f" for="sex">Gender</label>
+        <select id="sex"><option>Not specified</option><option>Male</option><option>Female</option></select></div>
+    </div>
+    <label class="f" for="q">Clinical question or case summary</label>
+    <textarea id="q" placeholder="e.g. Differential and work-up for a patient with fever and headache for 5 days"></textarea>
+    <div class="row" style="grid-template-columns:1fr 1fr">
+      <div><label class="f" for="pres">Findings present (optional)</label>
+        <textarea id="pres" placeholder="History, exam, lab or imaging findings you have confirmed"></textarea></div>
+      <div><label class="f" for="abs">Findings confirmed absent (optional)</label>
+        <textarea id="abs" placeholder="Things you asked or checked that were negative"></textarea></div>
+    </div>
+    <div class="hint">Anything you leave out is treated as <b>unknown</b>, never as negative.</div>
+    <label class="chk"><input type="checkbox" id="pk" checked> Consider disease patterns and drug availability common in Pakistan</label>
+    <label class="f" for="depth">Detail level</label>
+    <select id="depth" style="max-width:260px"><option value="concise">Concise</option><option value="detailed">Detailed (specialist depth)</option></select>
+    <div class="actions">
+      <button class="btn" id="go">Get evidence summary</button>
+      <span class="cases">Try a synthetic case: <button type="button" data-c="1">adult fever + headache</button><button type="button" data-c="2">child cough + fast breathing</button></span>
+    </div>
+  </div>
+
+  <div id="status" role="status" aria-live="polite"></div>
+  <div id="out"></div>
+  <div id="fbwrap"></div>
+  <details class="panel" id="survey"></details>
+
+  <footer>Prototype for usability and relevance testing. Feedback you submit is used only to improve the product.</footer>
+</div>
+
+<script>
+var SPECS=["General Medicine","Internal Medicine","Paediatrics","Cardiology","Pulmonology","Infectious Disease","Endocrinology","Nephrology","Gastroenterology","Neurology","Obstetrics & Gynaecology","Emergency Medicine","Surgery","ENT (Otolaryngology) Surgery","Rheumatology","Psychiatry"];
+var CASES={
+ 1:{spec:"Internal Medicine",age:"Adult",sex:"Not specified",q:"Fever for 5 days with headache. What should I consider and what work-up is usually suggested?",pres:"Fever 5 days, frontal headache, myalgia",abs:"No neck stiffness, no rash"},
+ 2:{spec:"Paediatrics",age:"Child",sex:"Not specified",q:"Child with cough and fast breathing. What conditions should I consider and how is severity assessed?",pres:"Cough 3 days, fever, respiratory rate raised for age",abs:"No stridor"}
+};
+var $=function(i){return document.getElementById(i)};
+var last=null;
+SPECS.forEach(function(s){var o=document.createElement("option");o.textContent=s;$("spec").appendChild(o)});
+try{var saved=localStorage.getItem("cec_spec");if(saved)$("spec").value=saved}catch(e){}
+$("spec").addEventListener("change",function(){try{localStorage.setItem("cec_spec",$("spec").value)}catch(e){}});
+
+try{var c0=sessionStorage.getItem("cec_code");if(c0)$("code").value=c0}catch(e){}
+$("code").addEventListener("input",function(){try{sessionStorage.setItem("cec_code",$("code").value)}catch(e){}});
+
+document.querySelectorAll(".cases button").forEach(function(b){b.addEventListener("click",function(){
+  var c=CASES[b.dataset.c];$("spec").value=c.spec;$("age").value=c.age;$("sex").value=c.sex;$("q").value=c.q;$("pres").value=c.pres;$("abs").value=c.abs;
+})});
+
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function list(a){a=Array.isArray(a)?a:[];return a.length?"<ul>"+a.map(function(x){return"<li>"+esc(x)+"</li>"}).join("")+"</ul>":"<p class='ctx'>None provided.</p>"}
+
+function inp(){
+  return {specialty:$("spec").value,age_group:$("age").value,gender:$("sex").value,question:$("q").value.trim(),
+    findings_present:$("pres").value.trim()||"none provided",findings_confirmed_absent:$("abs").value.trim()||"none provided",
+    pakistan_context:$("pk").checked,detail:$("depth").value};
+}
+async function callApi(url,body){
+  var r,j;
+  try{r=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json","x-access-code":($("code").value||"").trim()},body:JSON.stringify(body)})}catch(e){throw {code:"network"}}
+  try{j=await r.json()}catch(e){j={}}
+  if(!r.ok)throw {code:j.code||("http_"+r.status),message:j.error};
+  return j;
+}
+
+$("go").addEventListener("click",async function(){
+  var st=$("status"),btn=$("go");
+  st.className="";$("out").innerHTML="";$("fbwrap").innerHTML="";
+  if(!$("q").value.trim()){st.className="err";st.textContent="Enter a clinical question or case summary first.";return}
+  btn.disabled=true;st.textContent="Reviewing your question… this can take 15–40 seconds.";
+  try{
+    var r=await callApi("/api/analyze",inp());
+    if(!r||typeof r!=="object")throw {message:"Unreadable response"};
+    last={input:{spec:$("spec").value,age:$("age").value,sex:$("sex").value,q:$("q").value.trim(),pres:$("pres").value.trim(),abs:$("abs").value.trim(),pk:$("pk").checked,depth:$("depth").value},output:r};
+    render(r);st.textContent="";showFeedback();
+    $("out").scrollIntoView({behavior:"smooth",block:"start"});
+  }catch(e){
+    st.className="err";
+    st.textContent=(e&&e.code==="bad_code")?"The access code is missing or wrong. Enter the code the team gave you.":
+      (e&&e.code==="rate_limited")?"Too many requests from you. Wait a few minutes and try again.":
+      (e&&e.code==="busy")?"The free AI service is busy right now. Wait a minute and try again.":
+      (e&&e.code==="blocked")?"The AI declined this request. Rephrase the question and try again.":
+      (e&&e.code==="network")?"Can’t reach the server. Check your internet connection and try again.":"Something went wrong generating the summary. Your question is still here; try again.";
+  }
+  btn.disabled=false;
+});
+
+function render(r){
+  var h="<div class='panel res'><h2>"+esc(r.question_restated||"Evidence summary")+"</h2>";
+  h+="<div class='ctx'>Context used: "+((r.context_used||[]).map(function(c){return"<span class='tag'>"+esc(c)+"</span>"}).join("")||"none")+"</div>";
+  if((r.red_flags||[]).length)h+="<section><div class='flag'><h3>Time-critical possibilities to rule out</h3>"+list(r.red_flags)+"</div></section>";
+  h+="<section><h3>Typical presentation and symptoms</h3>"+list(r.typical_presentation)+"</section>";
+  h+="<section><h3>Diagnostic considerations</h3>";
+  (r.differential||[]).forEach(function(d){
+    h+="<div class='dx'><b>"+esc(d.condition)+"</b><div class='cols'><div><small>Supports</small>"+list(d.supports)+"</div><div><small>Against or unknown</small>"+list(d.against_or_unknown)+"</div></div>"+(d.note?"<div class='ctx' style='margin-top:6px'>"+esc(d.note)+"</div>":"")+"</div>";
+  });
+  h+="<p class='ctx'>Possibilities for your consideration, not confirmed diagnoses. No probabilities are given.</p></section>";
+  h+="<section><h3>Missing information that matters</h3><div class='unk'>"+list(r.missing_information)+"</div></section>";
+  h+="<section><h3>Investigations often considered</h3>";
+  (r.investigations||[]).forEach(function(i){h+="<p style='margin:6px 0'><b>"+esc(i.test)+"</b>: "+esc(i.purpose)+(i.limitation?" <span class='ctx'>Limitation: "+esc(i.limitation)+"</span>":"")+"</p>"});
+  h+="</section><section><h3>Treatment information</h3>";
+  (r.treatment_information||[]).forEach(function(t){h+="<p style='margin:6px 0'><b>"+esc(t.option)+"</b> <span class='ctx'>("+esc(t.applies_to)+")</span><br>"+esc(t.cautions)+"</p>"});
+  h+="<p class='ctx'>Information for your consideration, not an order or prescription. Doses are intentionally not shown in this prototype.</p></section>";
+  h+="<section><h3>Where to verify</h3><p class='ctx'>Names only. This prototype has not checked these sources, so confirm them yourself.</p>"+
+     ((r.verify_sources||[]).map(function(s){return"<p style='margin:6px 0'><b>"+esc(s.name)+"</b>: "+esc(s.why)+"</p>"}).join("")||"<p class='ctx'>None suggested.</p>")+"</section>";
+  h+="<section><h3>Limitations</h3>"+list(r.limitations)+"</section></div>";
+  $("out").innerHTML=h;
+}
+
+function seg(name,opts,multi){return"<div class='seg'>"+opts.map(function(o){return"<label><input type='"+(multi?"checkbox":"radio")+"' name='"+name+"' value='"+esc(o)+"'><span>"+esc(o)+"</span></label>"}).join("")+"</div>"}
+function pick(n){var e=document.querySelector("input[name="+n+"]:checked");return e?e.value:""}
+function picks(n){return Array.prototype.map.call(document.querySelectorAll("input[name="+n+"]:checked"),function(e){return e.value})}
+function Q(t,h){return"<div class='q'>"+t+"</div>"+h}
+function tid(){try{var t=localStorage.getItem("cec_tid");if(!t){t="t_"+Math.random().toString(36).slice(2,9);localStorage.setItem("cec_tid",t)}return t}catch(e){return"t_anon"}}
+function need(s,msg,n){
+  document.querySelectorAll(".miss").forEach(function(x){x.classList.remove("miss")});
+  s.innerHTML="<div class='errbox' role='alert'>"+msg+"</div>";
+  var e=n&&document.querySelector("input[name="+n+"]");
+  if(e){var g=e.closest(".seg")||e;g.classList.add("miss");g.scrollIntoView({behavior:"smooth",block:"center"})}else{s.scrollIntoView({behavior:"smooth",block:"center"})}
+}
+async function saveRec(rec,s,btn){
+  var ok=false,why="";
+  btn.disabled=true;btn.textContent="Sending…";s.innerHTML="<p class='ctx'>Sending…</p>";
+  try{await callApi("/api/feedback",rec);ok=true}catch(e){why=(e&&e.code==="bad_code")?"wrong or missing access code":(e&&e.code==="storage")?"the team’s feedback storage could not be reached":(e&&(e.code||e.message))||"unknown error"}
+  if(ok){s.innerHTML="<div class='ok'>Thank you. Your feedback was sent to the team.</div>";btn.textContent="Sent";return}
+  btn.textContent="Not sent";
+  try{var a=JSON.parse(localStorage.getItem("cec_fb")||"[]");a.push(rec);localStorage.setItem("cec_fb",JSON.stringify(a))}catch(e){}
+  s.innerHTML="<div class='errbox'>This was <b>not sent</b> to the team ("+esc(why)+"). It is saved on this device only.</div><p class='ctx'>Copy your feedback and send it to the team yourself:</p><div class='actions'><button class='btn ghost cpy'>Copy feedback</button></div>";
+  s.querySelector(".cpy").addEventListener("click",function(){
+    var t=JSON.stringify(rec,null,2),c=s.querySelector(".cpy");
+    (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(function(){c.textContent="Copied"}).catch(function(){var ta=document.createElement("textarea");ta.value=t;s.appendChild(ta);ta.select()});
+  });
+}
+function showFeedback(){
+  $("fbwrap").innerHTML="<div class='panel fb'><h2>Rate this answer (about 1 minute)</h2>"+
+  Q("How relevant was this answer to your question? (1 = off-target, 5 = exactly right)",seg("a_rel",["1","2","3","4","5"]))+
+  Q("Was this answer pitched at the right level for your specialty?",seg("a_depth",["Too basic","About right","Too advanced","Not specific to my specialty"]))+
+  Q("Accuracy, as far as you can judge",seg("a_acc",["No errors noticed","Minor errors","Clinically significant error","Potentially unsafe"]))+
+  Q("Which parts had a problem? (select all that apply)",seg("a_bad",["Symptoms","Differential","Investigations","Treatment","Missing information","Red flags","Sources to verify","None"],true))+
+  Q("Did this answer miss something you would expect a specialist to include?",seg("a_miss",["No","Yes"]))+
+  Q("How far would you trust this answer without checking another source?",seg("a_trust",["Not at all","Only as a prompt","Mostly","Fully"]))+
+  Q("In your real practice, this answer would…",seg("a_use",["Save me time","Be a useful second check","Need so much checking it saves no time","Not be usable"]))+
+  "<label class='f' for='cm'>What exactly was wrong, missing or useful? Name the item.</label><textarea id='cm' placeholder='e.g. Treatment: first-line option for X is missing; Differential: Y is unlikely at this age'></textarea>"+
+  "<div class='hint'>Do not include patient names or identifiers.</div>"+
+  "<div class='actions'><button class='btn' id='sub'>Submit feedback</button></div><div id='fbs'></div></div>";
+  $("sub").addEventListener("click",submitFb);
+}
+async function submitFb(){
+  var s=$("fbs");
+  if(!pick("a_rel")||!pick("a_acc")||!pick("a_use")){need(s,"Please answer relevance, accuracy and “in your real practice”.",!pick("a_rel")?"a_rel":!pick("a_acc")?"a_acc":"a_use");return}
+  await saveRec({type:"answer",tester:tid(),ts:new Date().toISOString(),input:last.input,output:last.output,relevance:pick("a_rel"),specialty_fit:pick("a_depth"),accuracy:pick("a_acc"),problem_parts:picks("a_bad"),missed_something:pick("a_miss"),trust:pick("a_trust"),real_use:pick("a_use"),comment:$("cm").value},s,$("sub"));
+}
+function renderSurvey(){
+  $("survey").innerHTML="<summary>Help shape the product: 2-minute survey (answer once)</summary><div class='fb'>"+
+  Q("Where do you mainly work?",seg("s_set",["Government hospital","Private hospital","Private clinic","Teaching hospital","Other (specify below)"])+"<input type='text' id='s_set_o' placeholder='If you chose Other, tell us where you work' style='margin-top:8px'>")+
+  Q("Your role",seg("s_role",["House officer / trainee","Medical officer","Resident / postgraduate trainee","Specialist / consultant","Other (specify below)"])+"<input type='text' id='s_role_o' placeholder='If you chose Other, tell us your role' style='margin-top:8px'>")+
+  Q("Years in practice",seg("s_exp",["Under 3","3 to 10","Over 10"]))+
+  Q("How often do you look up clinical information on a working day?",seg("s_freq",["Rarely","1 to 3 times","4 to 10 times","More than 10 times"]))+
+  Q("Which sources or tools do you use today to look up clinical information? (select all)",seg("s_now",["Google","ChatGPT or other AI","UpToDate","Medscape","PubMed / journals","Textbooks","Colleagues or WhatsApp groups","Hospital protocols","Other (specify below)"],true)+"<input type='text' id='s_now_o' placeholder='If you chose Other, tell us which source or tool' style='margin-top:8px'>")+
+  Q("What frustrates you about the sources or tools you use today? (select all)",seg("s_pain",["Takes too long","Hard to trust","Not specific to my specialty","Not relevant to Pakistan","Paywalled","Hard to verify sources","Nothing major"],true))+
+  Q("Which features of a tool like this matter most to you? (pick up to 3)",seg("s_feat",["Source links I can open","Speed","Specialty-level depth","Pakistan-specific guidance","Drug dose and interaction checks","Using my patient’s details","Voice notes from the consultation","Urdu support","Works with poor internet"],true))+
+  Q("Which device would you use a tool like this on?",seg("s_dev",["Phone","Laptop","Hospital computer"]))+
+  Q("Would you use FocusDoc at least weekly in your real practice?",seg("s_use",["Definitely not","Unlikely","Maybe","Likely","Definitely"]))+
+  Q("What would stop you from using FocusDoc in your work?","<textarea id='s_stop' placeholder='e.g. accuracy worries, no time, hospital policy, cost'></textarea>")+
+  Q("Would you pay for FocusDoc? Monthly price in PKR",seg("s_pay",["Free only","Up to 1,000","1,000 to 2,500","2,500 to 4,000","Over 4,000"]))+
+  Q("If this tool were paid, who should pay for it?",seg("s_who",["Me","My department","My hospital","Not sure","Not applicable: I would not pay"]))+
+  Q("How likely are you to recommend FocusDoc to a colleague? (0 = not at all likely, 10 = extremely likely)",seg("s_nps",["0","1","2","3","4","5","6","7","8","9","10"]))+
+  "<div class='actions'><button class='btn' id='ssub'>Submit survey</button></div><div id='sfs'></div></div>";
+  $("ssub").addEventListener("click",async function(){
+    var s=$("sfs");
+    var req=[["s_set","where you work"],["s_role","your role"],["s_exp","years in practice"],["s_freq","how often you look up clinical information"],["s_dev","which device you would use"],["s_use","whether you would use it weekly"],["s_pay","what you would pay"],["s_who","who should pay"],["s_nps","how likely you are to recommend it"]];
+    for(var i=0;i<req.length;i++){if(!pick(req[i][0])){need(s,"Please answer: "+req[i][1]+".",req[i][0]);return}}
+    var mu=[["s_now","the sources or tools you use today"],["s_pain","what frustrates you about them"],["s_feat","the features that matter most"]];
+    for(var j=0;j<mu.length;j++){if(!picks(mu[j][0]).length){need(s,"Please answer: "+mu[j][1]+".",mu[j][0]);return}}
+    if(picks("s_feat").length>3){need(s,"Please pick at most 3 features.","s_feat");return}
+    await saveRec({type:"survey",tester:tid(),ts:new Date().toISOString(),setting:pick("s_set"),setting_other:$("s_set_o").value,role:pick("s_role"),role_other:$("s_role_o").value,experience:pick("s_exp"),lookup_frequency:pick("s_freq"),current_tools:picks("s_now"),tools_other:$("s_now_o").value,frustrations:picks("s_pain"),top_features:picks("s_feat"),device:pick("s_dev"),weekly_use:pick("s_use"),blockers:$("s_stop").value,price_band_pkr:pick("s_pay"),payer:pick("s_who"),recommend_0_10:pick("s_nps")},s,$("ssub"));
+  });
+}
+renderSurvey();
+</script>
+</body>
+</html>

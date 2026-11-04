@@ -1,0 +1,17 @@
+{
+  "name": "focusdoc-prototype",
+  "private": true,
+  "version": "1.0.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@vercel/blob": "^2.8.2"
+  },
+  "overrides": {
+    "@vercel/cli-config": "0.3.6"
+  }
+}
